@@ -29,48 +29,25 @@ public class Client
 
     public async Task<string> Ping()
     {
-        string GETCommand = String.Format("PING\r\n");
-        byte[] buffer = Encoding.UTF8.GetBytes(GETCommand);
-        await _client.Client.SendAsync(buffer);
-
-        await WaitForResponse();
-
-        string message = String.Empty;
-        int messageLength = _client.Available;
-        if (messageLength > 0)
-        {
-            buffer = new byte[messageLength];
-            _stream.Read(buffer, 0, messageLength);
-
-            message = Encoding.UTF8.GetString(buffer, 0, messageLength);
-        }
-        return message;
+        string command = String.Format("PING\r\n");
+        return await SendCommand(command);
     }
 
     public async Task<string> GET(string key)
     {
-        string GETCommand = String.Format("GET {0}\r\n", key);
-        byte[] buffer = Encoding.UTF8.GetBytes(GETCommand);
-        await _client.Client.SendAsync(buffer);
-
-        await WaitForResponse();
-
-        string message = string.Empty;
-        int messageLength = _client.Available;
-        if (messageLength > 0)
-        {
-            buffer = new byte[messageLength];
-            _stream.Read(buffer, 0, messageLength);
-
-            message = Encoding.UTF8.GetString(buffer, 0, messageLength);
-        }
-        return message;
+        string command = String.Format("GET {0}\r\n", key);
+        return await SendCommand(command);
     }
 
     public async Task<string> SET(string key, string value)
     {
-        string GETCommand = String.Format("SET {0} {1}\r\n", key, value);
-        byte[] buffer = Encoding.UTF8.GetBytes(GETCommand);
+        string command = String.Format("SET {0} {1}\r\n", key, value);
+        return await SendCommand(command);
+    }
+
+    private async Task<string> SendCommand(string command)
+    {
+        byte[] buffer = Encoding.UTF8.GetBytes(command);
         await _client.Client.SendAsync(buffer);
 
         await WaitForResponse();
